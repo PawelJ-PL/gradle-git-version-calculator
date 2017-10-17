@@ -1,22 +1,20 @@
 package com.github.gradle_git_version_calculator;
 
-import org.eclipse.jgit.api.Git;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.IOException;
 
 public class GitVersionCalculatorTest {
     
     private GitVersionCalculator service;
-    private final String path = "/home/pawel/IdeaProjects/MyHomeInfo/";
-    //private final String path = "/tmp/repo";
+    //private final String path = "/home/pawel/IdeaProjects/MyHomeInfo/";
+    private final String path = "/tmp/repo/xx";
     
     @Before
     public void setUp() throws IOException {
-        Git git = Git.open(new File(path));
-        service = new GitVersionCalculator(git);
+        ScmFactory scmFactory = new ScmFactory(path);
+        service = new GitVersionCalculator(scmFactory);
     }
     
     @Test
@@ -24,8 +22,9 @@ public class GitVersionCalculatorTest {
         //given
         
         //when
-        service.calculateSemVer();
+        String result = service.calculateSemVer();
         
         //then
+        System.out.println(result);
     }
 }

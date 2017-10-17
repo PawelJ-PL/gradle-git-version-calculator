@@ -8,8 +8,8 @@ public class GitVersionCalculator {
     
     private final Git git;
     
-    public GitVersionCalculator(Git git) {
-        this.git = git;
+    public GitVersionCalculator(ScmFactory scmFactory) {
+        git = scmFactory.getScm();
     }
     
     public String calculateSemVer() {
@@ -21,5 +21,9 @@ public class GitVersionCalculator {
             throw new RuntimeException(err);
         }
         return describeResult;
+    }
+
+    private void validateSemVer(String version) {
+
     }
 }
