@@ -10,6 +10,5 @@ repositories {
 }
 
 dependencies {
-    compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '4.9.0.201710071750-r'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
