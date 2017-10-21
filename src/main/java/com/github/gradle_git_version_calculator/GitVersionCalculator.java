@@ -12,18 +12,17 @@ public class GitVersionCalculator {
         git = scmFactory.getScm();
     }
     
-    public String calculateSemVer() {
-        String describeResult;
+    public String calculateVersion() {
+        return getVersionFromTag();
+    }
+
+    private String getVersionFromTag() {
         try {
             DescribeCommand describeCommand = git.describe();
-            describeResult = describeCommand.call();
+            return describeCommand.call();
         } catch (GitAPIException err) {
             throw new RuntimeException(err);
         }
-        return describeResult;
     }
 
-    private void validateSemVer(String version) {
-
-    }
 }

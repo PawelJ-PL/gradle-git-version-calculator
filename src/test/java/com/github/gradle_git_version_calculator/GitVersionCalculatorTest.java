@@ -22,7 +22,7 @@ public class GitVersionCalculatorTest {
         //given
         
         //when
-        String result = service.calculateSemVer();
+        String result = service.calculateVersion();
         
         //then
         System.out.println(result);
