@@ -1,16 +1,17 @@
 package com.github.gradle_git_version_calculator;
 
-import java.util.stream.Stream;
+import java.util.Collections;
+import java.util.List;
 
 public class GitCommandResult {
     
     private int statusCode;
     
-    private Stream<String> stdOut;
+    private List<String> stdOut;
     
-    private Stream<String> stdErr;
+    private List<String> stdErr;
     
-    public GitCommandResult(int statusCode, Stream<String> stdOut, Stream<String> stdErr) {
+    public GitCommandResult(int statusCode, List<String> stdOut, List<String> stdErr) {
         this.statusCode = statusCode;
         this.stdOut = stdOut;
         this.stdErr = stdErr;
@@ -20,25 +21,25 @@ public class GitCommandResult {
         return statusCode;
     }
     
-    public Stream<String> getStdOut() {
-        return stdOut;
+    public List<String> getStdOut() {
+        return Collections.unmodifiableList(stdOut);
     }
     
-    public Stream<String> getStdErr() {
-        return stdErr;
+    public List<String> getStdErr() {
+        return Collections.unmodifiableList(stdErr);
     }
     
     public String getStdOutAsString() {
-        return convertStreamToString(stdOut);
+        return convertListToString(stdOut);
     }
     
     public String getStdErrAsString() {
-        return convertStreamToString(stdErr);
+        return convertListToString(stdErr);
     }
     
-    private String convertStreamToString(Stream<String> stream) {
+    private String convertListToString(List<String> list) {
         StringBuilder stringBuilder = new StringBuilder();
-        stream.forEachOrdered(line -> {
+        list.forEach(line -> {
             stringBuilder.append(line);
             stringBuilder.append("\n");
         });

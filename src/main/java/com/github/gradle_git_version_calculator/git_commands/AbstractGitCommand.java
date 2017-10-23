@@ -6,11 +6,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public abstract class AbstractGitCommand {
+public abstract class AbstractGitCommand implements GitCommand{
     
     private String gitExecutable;
     
@@ -18,9 +18,7 @@ public abstract class AbstractGitCommand {
     
     private final String gitCommand;
     
-    public AbstractGitCommand() {
-        this(Paths.get(".").toAbsolutePath().normalize().toString());
-    }
+    protected List<String> args = new ArrayList<>();
     
     public AbstractGitCommand(String gitRepo) {
         this(gitRepo, "git");
@@ -32,9 +30,15 @@ public abstract class AbstractGitCommand {
         gitCommand = getCommand();
     }
     
+    public GitCommandResult call() {
+        GitCommandResult result = process();
+        validateResult(result);
+        return result;
+    }
+    
     protected abstract String getCommand();
     
-    protected GitCommandResult process(List<String> args) {
+    private GitCommandResult process() {
         List<String > cmd = new ArrayList<>();
         cmd.add(gitExecutable);
         cmd.add(gitCommand);
@@ -55,7 +59,21 @@ public abstract class AbstractGitCommand {
         BufferedReader stdout = new BufferedReader(new InputStreamReader(process.getInputStream()));
         BufferedReader stderr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
         
-        return new GitCommandResult(process.exitValue(), stdout.lines(), stderr.lines());
+        return new GitCommandResult(process.exitValue(),
+                                    stdout.lines().collect(Collectors.toList()),
+                                    stderr.lines().collect(Collectors.toList()));
+    }
+    
+    private void validateResult(GitCommandResult result) {
+        if (result.getStatusCode() != 0) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(result.getStdOutAsString());
+            if (!result.getStdOutAsString().trim().equals("") && !result.getStdErrAsString().trim().equals("")) {
+                stringBuilder.append("\n\n");
+            }
+            stringBuilder.append(result.getStdErrAsString());
+            throw new RuntimeException(stringBuilder.toString());
+        }
     }
 
 }
