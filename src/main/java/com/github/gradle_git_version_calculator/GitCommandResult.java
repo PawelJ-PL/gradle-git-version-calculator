@@ -5,11 +5,11 @@ import java.util.List;
 
 public class GitCommandResult {
     
-    private int statusCode;
+    private final int statusCode;
     
-    private List<String> stdOut;
+    private final List<String> stdOut;
     
-    private List<String> stdErr;
+    private final List<String> stdErr;
     
     public GitCommandResult(int statusCode, List<String> stdOut, List<String> stdErr) {
         this.statusCode = statusCode;
@@ -46,4 +46,18 @@ public class GitCommandResult {
         return stringBuilder.toString();
     }
     
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(String.format("Status code: %d", statusCode));
+        if (stdOut.size() > 0) {
+            stringBuilder.append("\nStdout:\n");
+            stringBuilder.append(getStdOutAsString());
+        }
+        if (stdErr.size() > 0) {
+            stringBuilder.append("\nStderr:\n");
+            stringBuilder.append(getStdErrAsString());
+        }
+        return stringBuilder.toString();
+    }
 }

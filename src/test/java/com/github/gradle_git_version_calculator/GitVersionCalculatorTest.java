@@ -18,6 +18,8 @@ public class GitVersionCalculatorTest {
         //given
         
         //when
+        GitRepository repository = new GitRepository(new GitCommandsFactory(path));
+        System.out.println(repository.getLatestTag());
         
         //then
         //System.out.println(result);
