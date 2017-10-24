@@ -1,4 +1,4 @@
-package com.github.gradle_git_version_calculator;
+package com.github.gradle_git_version_calculator.models;
 
 import java.util.Collections;
 import java.util.List;

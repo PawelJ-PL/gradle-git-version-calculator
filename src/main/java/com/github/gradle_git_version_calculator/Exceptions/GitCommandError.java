@@ -1,6 +1,6 @@
 package com.github.gradle_git_version_calculator.Exceptions;
 
-import com.github.gradle_git_version_calculator.GitCommandResult;
+import com.github.gradle_git_version_calculator.models.GitCommandResult;
 
 public class GitCommandError extends RuntimeException {
     
