@@ -1,9 +1,11 @@
 package com.github.gradle_git_version_calculator;
 
 import com.github.gradle_git_version_calculator.Exceptions.NoNamesFoundError;
+import com.github.gradle_git_version_calculator.Exceptions.NotGitRepositoryError;
 import com.github.gradle_git_version_calculator.git_commands.GitCommand;
 import com.github.gradle_git_version_calculator.models.GitCommandResult;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class GitRepository {
@@ -19,7 +21,7 @@ public class GitRepository {
         GitCommandResult result;
         try {
             result = command.call();
-        } catch (NoNamesFoundError err) {
+        } catch (NoNamesFoundError | NotGitRepositoryError err) {
             //TODO add logger here
             return Optional.empty();
         }
@@ -29,6 +31,12 @@ public class GitRepository {
                                                      result.getStdOutAsString()));
         }
         return Optional.of(result.getStdOutAsString().trim());
+    }
+    
+    public Integer getCommitsSinceTag(String tag) {
+        GitCommand command = commandsFactory.getRevList().setSpec(String.format("%s..", tag)).setCount(true);
+        GitCommandResult result = command.call();
+        return Integer.parseInt(result.getStdOutAsString().trim());
     }
     
 }

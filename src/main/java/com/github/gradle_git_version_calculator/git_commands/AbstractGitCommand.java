@@ -2,6 +2,7 @@ package com.github.gradle_git_version_calculator.git_commands;
 
 import com.github.gradle_git_version_calculator.Exceptions.GitCommandError;
 import com.github.gradle_git_version_calculator.Exceptions.NoNamesFoundError;
+import com.github.gradle_git_version_calculator.Exceptions.NotGitRepositoryError;
 import com.github.gradle_git_version_calculator.models.GitCommandResult;
 
 import java.io.BufferedReader;
@@ -70,6 +71,8 @@ public abstract class AbstractGitCommand implements GitCommand{
         if (result.getStatusCode() != 0) {
             if (result.getStdErrAsString().trim().equals("fatal: No names found, cannot describe anything.")) {
                 throw new NoNamesFoundError(result);
+            } else if (result.getStdErr().stream().anyMatch(line -> line.startsWith("fatal: Not a git repository"))) {
+                throw new NotGitRepositoryError(result);
             } else {
                 throw new GitCommandError(result);
             }

@@ -10,7 +10,7 @@ public class GitVersionCalculatorTest {
 
     @Before
     public void setUp()  {
-        service = new GitVersionCalculator();
+        service = new GitVersionCalculator(new GitRepository(new GitCommandsFactory(path)));
     }
     
     @Test
@@ -18,8 +18,7 @@ public class GitVersionCalculatorTest {
         //given
         
         //when
-        GitRepository repository = new GitRepository(new GitCommandsFactory(path));
-        System.out.println(repository.getLatestTag());
+        service.calculateSemVer();
         
         //then
         //System.out.println(result);
