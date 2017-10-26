@@ -5,7 +5,6 @@ import com.github.gradle_git_version_calculator.Exceptions.NotGitRepositoryError
 import com.github.gradle_git_version_calculator.git_commands.GitCommand;
 import com.github.gradle_git_version_calculator.models.GitCommandResult;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 public class GitRepository {

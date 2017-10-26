@@ -15,9 +15,9 @@ public class GitVersionCalculator {
 
     public SemanticVersion calculateSemVer() {
         String tag = gitRepository.getLatestTag().orElse(DEFAULT_VERSION);
-        System.out.println(tag);
-        System.out.println(gitRepository.getCommitsSinceTag("0.1.0"));
-        return new SemanticVersion();
+        //System.out.println(tag);
+        //System.out.println(gitRepository.getCommitsSinceTag("0.1.0"));
+        return new SemanticVersion(1,1,1);
     }
 
 }
