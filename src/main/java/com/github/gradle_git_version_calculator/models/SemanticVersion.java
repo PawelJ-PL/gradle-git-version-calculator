@@ -18,10 +18,20 @@ public class SemanticVersion {
     
     private String buildMetadata;
     
+    private final static String WITHOUT_LEADING_ZEROS_PATTERN =
+            "[A-Za-z1-9-][A-Za-z0-9-]*(?:\\.[A-Za-z1-9-][A-Za-z0-9-]*)";
+    
+    private final static String WITH_LEADING_ZEROS_PATTERN = "[A-Za-z0-9-]*+(?:\\.[A-Za-z0-9-]*)";
+    
     private final static String COMPONENTS_PATTERN =
-            "^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?:-(?<preRelease>[A-Za-z1-9-][A-Za-z0-9-]*(?:\\.[A-Za-z1-9-][A-Za-z0-9-]*)*))?(?:\\+(?<buildMetadata>[A-Za-z0-9-]*+(?:\\.[A-Za-z0-9-]*)*))?$";
+            String.format("^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?:-(?<preRelease>%s)*)?(?:\\+(?<buildMetadata>%s*))?$",
+                          WITHOUT_LEADING_ZEROS_PATTERN, WITH_LEADING_ZEROS_PATTERN);
     
     public SemanticVersion(Integer major, Integer minor, Integer patch, String preRelease, String buildMetadata) {
+        Objects.requireNonNull(major, "Major version can't be null");
+        Objects.requireNonNull(minor, "Minor version can't be null");
+        Objects.requireNonNull(patch, "Patch version can't be null");
+        validateParameterRegex(preRelease, WITHOUT_LEADING_ZEROS_PATTERN);
         this.major = major;
         this.minor = minor;
         this.patch = patch;
@@ -30,29 +40,19 @@ public class SemanticVersion {
     }
     
     public SemanticVersion(Integer major, Integer minor, Integer patch) {
-        this.major = major;
-        this.minor = minor;
-        this.patch = patch;
+        this(major, minor, patch, null, null);
     }
     
-    public Integer getMajor() {
-        return major;
-    }
-    
-    public Integer getMinor() {
-        return minor;
-    }
-    
-    public Integer getPatch() {
-        return patch;
-    }
-    
-    public String getPreRelease() {
-        return preRelease;
-    }
-    
-    public String getBuildMetadata() {
-        return buildMetadata;
+    private void validateParameterRegex(String parameter, String regex) {
+        if (parameter == null) {
+            return;
+        }
+        regex = "^(?:" + regex + ")*$";
+        Pattern compiledPattern = Pattern.compile(regex);
+        Matcher matcher = compiledPattern.matcher(parameter);
+        System.out.println(parameter);
+        System.out.println(regex);
+        System.out.println(matcher.matches());
     }
     
     public static SemanticVersion fromString(String version) {
