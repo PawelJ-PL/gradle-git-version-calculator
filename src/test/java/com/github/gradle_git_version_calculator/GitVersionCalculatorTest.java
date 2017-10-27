@@ -19,10 +19,8 @@ public class GitVersionCalculatorTest {
         //given
         
         //when
-        service.calculateSemVer();
+        System.out.println(service.calculateSemVer());
         //SemanticVersion semanticVersion = SemanticVersion.fromString("12.34.56-1011aa.10sd-as.dsasd+fds.0ewfe.fdsf.fdsf");
-        SemanticVersion semanticVersion = new SemanticVersion(10, 20, 30, "1000", "0abc.das.0sfdf.sdf");
-        System.out.println(semanticVersion);
         
         //then
         //System.out.println(result);

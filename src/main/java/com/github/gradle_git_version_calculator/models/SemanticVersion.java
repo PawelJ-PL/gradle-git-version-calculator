@@ -19,13 +19,13 @@ public class SemanticVersion {
     private String buildMetadata;
     
     private final static String WITHOUT_LEADING_ZEROS_PATTERN =
-            "[A-Za-z1-9-][A-Za-z0-9-]*(?:\\.[A-Za-z1-9-][A-Za-z0-9-]*)";
+            "[A-Za-z1-9-][A-Za-z0-9-]*(?:\\.[A-Za-z1-9-][A-Za-z0-9-]*)*";
+            
     
-    private final static String WITH_LEADING_ZEROS_PATTERN = "[A-Za-z0-9-]*+(?:\\.[A-Za-z0-9-]*)";
+    private final static String WITH_LEADING_ZEROS_PATTERN = "[A-Za-z0-9-]+(?:\\.[A-Za-z0-9-]+)*";
     
     private final static String COMPONENTS_PATTERN =
-            String.format("^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?:-(?<preRelease>%s)*)?(?:\\+(?<buildMetadata>%s*))?$",
-                          WITHOUT_LEADING_ZEROS_PATTERN, WITH_LEADING_ZEROS_PATTERN);
+            String.format("^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?:-(?<preRelease>%s))?(?:\\+(?<buildMetadata>%s))?$", WITHOUT_LEADING_ZEROS_PATTERN, WITH_LEADING_ZEROS_PATTERN);
     
     public SemanticVersion(Integer major, Integer minor, Integer patch, String preRelease, String buildMetadata) {
         setMajor(major);
@@ -88,7 +88,6 @@ public class SemanticVersion {
         if (parameter == null) {
             return;
         }
-        regex = "^(?:" + regex + "*)$";
         Pattern compiledPattern = Pattern.compile(regex);
         Matcher matcher = compiledPattern.matcher(parameter);
         if (!matcher.matches()) {
@@ -113,7 +112,12 @@ public class SemanticVersion {
         Integer major = Integer.parseInt(matcher.group("major"));
         Integer minor = Integer.parseInt(matcher.group("minor"));
         Integer patch = Integer.parseInt(matcher.group("patch"));
-        return new SemanticVersion(major, minor, patch, matcher.group("preRelease"), matcher.group("buildMetadata"));
+        return new SemanticVersion(major, minor, patch, matcher.group("preRelease"),
+                                   matcher.group("buildMetadata"));
+    }
+    
+    public SemanticVersion copy() {
+        return new SemanticVersion(major, minor, patch, preRelease, buildMetadata);
     }
     
     @Override

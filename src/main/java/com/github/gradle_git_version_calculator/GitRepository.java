@@ -38,4 +38,10 @@ public class GitRepository {
         return Integer.parseInt(result.getStdOutAsString().trim());
     }
     
+    public boolean isClean() {
+        GitCommand command = commandsFactory.getStatus().setPorcelain(true);
+        GitCommandResult result = command.call();
+        return (result.getStdOut().size() == 0);
+    }
+    
 }
