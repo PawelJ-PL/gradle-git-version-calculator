@@ -3,6 +3,7 @@ package com.github.gradle_git_version_calculator.models;
 import com.github.gradle_git_version_calculator.Exceptions.VersionError;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -66,8 +67,8 @@ public class SemanticVersion {
         this.patch = patch;
     }
     
-    public String getPreRelease() {
-        return preRelease;
+    public Optional<String> getPreRelease() {
+        return Optional.ofNullable(preRelease);
     }
     
     public void setPreRelease(String preRelease) {
@@ -75,8 +76,8 @@ public class SemanticVersion {
         this.preRelease = preRelease;
     }
     
-    public String getBuildMetadata() {
-        return buildMetadata;
+    public Optional<String> getBuildMetadata() {
+        return Optional.ofNullable(buildMetadata);
     }
     
     public void setBuildMetadata(String buildMetadata) {

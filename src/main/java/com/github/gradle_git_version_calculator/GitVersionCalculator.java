@@ -36,16 +36,16 @@ public class GitVersionCalculator {
         if (gitRepository.isClean()) {
             return version;
         }
-        return getVersionWithUpdatedBuildMetadata(version, "dirty");
+        return getVersionWithUpdatedBuildMetadata(version, "dev");
     }
     
     private SemanticVersion getVersionWithUpdatedBuildMetadata(SemanticVersion originalVersion, String newElement) {
         SemanticVersion result = originalVersion.copy();
         StringBuilder stringBuilder = new StringBuilder();
-        if (originalVersion.getBuildMetadata() != null) {
-            stringBuilder.append(originalVersion.getBuildMetadata());
+        result.getBuildMetadata().ifPresent(data -> {
+            stringBuilder.append(data);
             stringBuilder.append(".");
-        }
+        });
         stringBuilder.append(newElement);
         result.setBuildMetadata(stringBuilder.toString());
         return result;
