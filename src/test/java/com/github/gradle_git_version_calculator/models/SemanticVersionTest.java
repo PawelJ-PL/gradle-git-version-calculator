@@ -187,4 +187,36 @@ public class SemanticVersionTest {
         new SemanticVersion(1, 3, -10);
     }
     
+    @Test
+    public void shouldThrowExceptionWhenMajorNull() {
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage("Numeric element can't be null");
+        new SemanticVersion(null, 3, 10);
+    }
+    
+    @Test
+    public void shouldThrowExceptionWhenMinorNull() {
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage("Numeric element can't be null");
+        new SemanticVersion(1, null, 10);
+    }
+    
+    @Test
+    public void shouldThrowExceptionWhenPatchNull() {
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage("Numeric element can't be null");
+        new SemanticVersion(1, 3, null);
+    }
+    
+    @Test
+    public void shouldThrowExceptionWhenLeadingZeroInPreReleaseId() {
+        //given
+        String inputData = "0.2.4-12a.opa.01a";
+        
+        //when
+        expectedException.expect(VersionError.class);
+        expectedException.expectMessage("0.2.4-12a.opa.01a is not valid semver");
+        SemanticVersion.fromString(inputData);
+    }
+    
 }
