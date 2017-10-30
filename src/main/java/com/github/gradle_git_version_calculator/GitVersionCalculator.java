@@ -12,16 +12,27 @@ public class GitVersionCalculator {
     public GitVersionCalculator(GitRepository gitRepository) {
         this.gitRepository = gitRepository;
     }
-
+    
     public SemanticVersion calculateSemVer() {
-        return gitRepository.getLatestTag()
+        return calculateSemVer("");
+    }
+
+    public SemanticVersion calculateSemVer(String prefix) {
+        return gitRepository.getLatestTag(prefix)
                 .map(tag -> {
-                    SemanticVersion result = SemanticVersion.fromString(tag);
+                    SemanticVersion result = SemanticVersion.fromString(extractVersionFromTag(tag, prefix));
                     result = addDistance(result, tag);
                     result = addCleanInfo(result);
                     return result;
                 })
                 .orElse(SemanticVersion.fromString(DEFAULT_VERSION));
+    }
+    
+    private String extractVersionFromTag(String tag, String prefix) {
+        if (!tag.startsWith(prefix)) {
+            throw new RuntimeException(String.format("%s is not prefix of %s", prefix, tag));
+        }
+        return tag.replaceFirst(String.format("^%s", prefix), "");
     }
     
     private SemanticVersion addDistance(SemanticVersion version, String baseTag) {

@@ -16,7 +16,12 @@ public class GitRepository {
     }
     
     public Optional<String> getLatestTag() {
-        GitCommand command = commandsFactory.getDescribe().setTags(true).setAbbrev(0);
+        return getLatestTag("");
+    }
+    
+    public Optional<String> getLatestTag(String prefix) {
+        GitCommand command =
+                commandsFactory.getDescribe().setTags(true).setAbbrev(0).setMatch(String.format("%s*", prefix));
         GitCommandResult result;
         try {
             result = command.call();

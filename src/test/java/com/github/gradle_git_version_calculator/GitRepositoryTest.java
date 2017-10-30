@@ -56,6 +56,7 @@ public class GitRepositoryTest {
     private void setupDescribeCommand() {
         when(describeCommand.setTags(anyBoolean())).thenReturn(describeCommand);
         when(describeCommand.setAbbrev(anyInt())).thenReturn(describeCommand);
+        when(describeCommand.setMatch(anyString())).thenReturn(describeCommand);
     }
     
     private void setupRevListCommand() {
@@ -82,6 +83,7 @@ public class GitRepositoryTest {
         assertThat(result.get()).isEqualTo("1.0.0");
         verify(describeCommand, times(1)).setTags(true);
         verify(describeCommand, times(1)).setAbbrev(0);
+        verify(describeCommand, times(1)).setMatch("*");
     }
     
     @Test
@@ -98,6 +100,7 @@ public class GitRepositoryTest {
         assertThat(result.isPresent()).isFalse();
         verify(describeCommand, times(1)).setTags(true);
         verify(describeCommand, times(1)).setAbbrev(0);
+        verify(describeCommand, times(1)).setMatch("*");
     }
     
     @Test
@@ -114,6 +117,7 @@ public class GitRepositoryTest {
         assertThat(result.isPresent()).isFalse();
         verify(describeCommand, times(1)).setTags(true);
         verify(describeCommand, times(1)).setAbbrev(0);
+        verify(describeCommand, times(1)).setMatch("*");
     }
     
     @Test
@@ -228,6 +232,24 @@ public class GitRepositoryTest {
         //then
         assertThat(result).isFalse();
         verify(statusCommand, times(1)).setPorcelain(true);
+    }
+    
+    @Test
+    public void shouldReturnLastPrefixedTag() {
+        //given
+        when(describeCommand.call()).thenReturn(new GitCommandResult(0,
+                                                                     Collections.singletonList("xxx_1.0.0"),
+                                                                     Collections.emptyList()));
+    
+        //when
+        Optional<String> result = gitRepository.getLatestTag("xxx_");
+    
+        //then
+        assertThat(result.isPresent()).isTrue();
+        assertThat(result.get()).isEqualTo("xxx_1.0.0");
+        verify(describeCommand, times(1)).setTags(true);
+        verify(describeCommand, times(1)).setAbbrev(0);
+        verify(describeCommand, times(1)).setMatch("xxx_*");
     }
     
 }

@@ -2,7 +2,9 @@ package com.github.gradle_git_version_calculator;
 
 import com.github.gradle_git_version_calculator.models.SemanticVersion;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.Optional;
 
@@ -17,6 +19,9 @@ public class GitVersionCalculatorTest {
     
     private GitVersionCalculator service;
     private GitRepository gitRepository;
+    
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void setUp()  {
@@ -28,7 +33,7 @@ public class GitVersionCalculatorTest {
     public void shouldGetCalculatedVersionWithDistanceAndDirtyRepo() {
         //given
         String originalTag = "3.1.12-8";
-        when(gitRepository.getLatestTag()).thenReturn(Optional.of(originalTag));
+        when(gitRepository.getLatestTag("")).thenReturn(Optional.of(originalTag));
         when(gitRepository.getCommitsSinceTag(originalTag)).thenReturn(6);
         when(gitRepository.isClean()).thenReturn(false);
         
@@ -42,7 +47,7 @@ public class GitVersionCalculatorTest {
     @Test
     public void shouldGetDefaultVersionWhenNoTagFound() {
         //given
-        when(gitRepository.getLatestTag()).thenReturn(Optional.empty());
+        when(gitRepository.getLatestTag("")).thenReturn(Optional.empty());
         
         //when
         SemanticVersion result = service.calculateSemVer();
@@ -57,7 +62,7 @@ public class GitVersionCalculatorTest {
     public void shouldGetCalculatedVersionDirtyRepo() {
         //given
         String originalTag = "3.1.12-8";
-        when(gitRepository.getLatestTag()).thenReturn(Optional.of(originalTag));
+        when(gitRepository.getLatestTag("")).thenReturn(Optional.of(originalTag));
         when(gitRepository.getCommitsSinceTag(originalTag)).thenReturn(0);
         when(gitRepository.isClean()).thenReturn(false);
         
@@ -72,7 +77,7 @@ public class GitVersionCalculatorTest {
     public void shouldGetCalculatedVersionWithDistance() {
         //given
         String originalTag = "3.1.12-8";
-        when(gitRepository.getLatestTag()).thenReturn(Optional.of(originalTag));
+        when(gitRepository.getLatestTag("")).thenReturn(Optional.of(originalTag));
         when(gitRepository.getCommitsSinceTag(originalTag)).thenReturn(6);
         when(gitRepository.isClean()).thenReturn(true);
         
@@ -87,7 +92,7 @@ public class GitVersionCalculatorTest {
     public void shouldGetCalculatedVersionWithDistanceAndDirtyRepoWhenNoPreviousBuildMetadata() {
         //given
         String originalTag = "3.1.12";
-        when(gitRepository.getLatestTag()).thenReturn(Optional.of(originalTag));
+        when(gitRepository.getLatestTag("")).thenReturn(Optional.of(originalTag));
         when(gitRepository.getCommitsSinceTag(originalTag)).thenReturn(6);
         when(gitRepository.isClean()).thenReturn(false);
         
@@ -96,5 +101,36 @@ public class GitVersionCalculatorTest {
         
         //then
         assertThat(result.toString()).isEqualTo("3.1.12+6.dev");
+    }
+    
+    @Test
+    public void shouldGetCalculatedVersionWithDistanceAndDirtyRepoWithPrefix() {
+        //given
+        String originalTag = "xyz__3.1.12-8";
+        String prefix = "xyz__";
+        when(gitRepository.getLatestTag(prefix)).thenReturn(Optional.of(originalTag));
+        when(gitRepository.getCommitsSinceTag(originalTag)).thenReturn(6);
+        when(gitRepository.isClean()).thenReturn(false);
+        
+        //when
+        SemanticVersion result = service.calculateSemVer(prefix);
+        
+        //then
+        assertThat(result.toString()).isEqualTo("3.1.12-8+6.dev");
+    }
+    
+    @Test
+    public void shouldThrowExceptionWhenTagDosntStartWithPrefix() {
+        //given
+        String originalTag = "xyz__3.1.12-8";
+        String prefix = "abc";
+        when(gitRepository.getLatestTag(prefix)).thenReturn(Optional.of(originalTag));
+        when(gitRepository.getCommitsSinceTag(originalTag)).thenReturn(6);
+        when(gitRepository.isClean()).thenReturn(false);
+        
+        //when
+        expectedException.expect(RuntimeException.class);
+        expectedException.expectMessage("abc is not prefix of xyz__3.1.12-8");
+        SemanticVersion result = service.calculateSemVer(prefix);
     }
 }
