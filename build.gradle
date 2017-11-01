@@ -1,7 +1,12 @@
+plugins {
+    id 'java-gradle-plugin'
+}
+
 group 'com.github.gradle-git-version-calculator'
 version '0.0.1-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'maven-publish'
 
 sourceCompatibility = 1.8
 
