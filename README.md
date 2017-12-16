@@ -50,7 +50,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath "com.github.gradle-git-version-calculator:gradle-git-version-calculator:0.1.0"
+    classpath "gradle.plugin.com.github.gradle-git-version-calculator:gradle-git-version-calculator:0.1.0"
   }
 }
 ```
