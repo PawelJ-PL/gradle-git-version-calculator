@@ -11,6 +11,8 @@ public class GitVersionCalculatorExtension {
     
     private String prefix = "";
     
+    private boolean withSnapshot;
+    
     public GitVersionCalculatorExtension(Project project) {
         this.project = project;
     }
@@ -23,13 +25,29 @@ public class GitVersionCalculatorExtension {
         this.prefix = prefix;
     }
     
-    public String calculateVersion(String prefix) {
+    public boolean isWithSnapshot() {
+        return withSnapshot;
+    }
+    
+    public void setWithSnapshot(boolean withSnapshot) {
+        this.withSnapshot = withSnapshot;
+    }
+    
+    public String calculateVersion(String prefix, boolean withSnapshot) {
         GitRepository repository = new GitRepository(new GitCommandsFactory(project.getProjectDir().getAbsolutePath()));
         GitVersionCalculator calculator = new GitVersionCalculator(repository);
-        return calculator.calculateSemVer(prefix).toString();
+        return calculator.calculateSemVer(prefix, withSnapshot).toString();
     }
     
     public String calculateVersion() {
-        return calculateVersion(prefix);
+        return calculateVersion(prefix, withSnapshot);
+    }
+    
+    public String calculateVersion(String prefix) {
+        return calculateVersion(prefix, withSnapshot);
+    }
+    
+    public String calculateVersion(boolean withSnapshot) {
+        return calculateVersion(prefix, withSnapshot);
     }
 }
