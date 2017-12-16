@@ -33,6 +33,10 @@ if prefix is set to *yyy__*, result version will be `1.2.5+5.dev`
 
 if prefix is set to *zzz__* (no tag matches) result version will be default `0.0.1-SNAPSHOT`
 
+#### Alternative
+
+When `withShanpshot` option is set (in build script or as method parameter) there will be added only SNAPSHOT suffix to preRelease part of version if repository is not clean or if commit with tag isn't HEAD.
+
 ## Requirements
 Because this plugin uses git commands, the Git must be installed and must be available as git from command line (in further version, path to git executable probably will be configurable).
 
@@ -69,12 +73,25 @@ or
 version gitVersionCalculator.calculateVersion("prefix")
 ```
 
+or if SNAPSHOT versions should be generated
+
+```groovy
+version gitVersionCalculator.calculateVersion(true)
+```
+
+or
+
+```groovy
+version gitVersionCalculator.calculateVersion("prefix", true)
+```
+
 ## Configuration
 You can configure prefix directly in Gradle script:
 
 ```groovy
 gitVersionCalculator {
     prefix = "prefix"
+    withSnapshot = false
 }
 ```
 Prefix provided as method argument has higher priority than configured in script.

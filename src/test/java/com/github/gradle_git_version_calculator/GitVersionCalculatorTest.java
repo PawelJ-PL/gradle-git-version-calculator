@@ -120,7 +120,7 @@ public class GitVersionCalculatorTest {
     }
     
     @Test
-    public void shouldThrowExceptionWhenTagDosntStartWithPrefix() {
+    public void shouldThrowExceptionWhenTagDoesNotStartWithPrefix() {
         //given
         String originalTag = "xyz__3.1.12-8";
         String prefix = "abc";
@@ -132,5 +132,134 @@ public class GitVersionCalculatorTest {
         expectedException.expect(RuntimeException.class);
         expectedException.expectMessage("abc is not prefix of xyz__3.1.12-8");
         SemanticVersion result = service.calculateSemVer(prefix);
+    }
+    
+    @Test
+    public void testShouldReturnVersionWithSnapshot() {
+        //given
+        String originalTag = "3.1.12";
+        when(gitRepository.getLatestTag("")).thenReturn(Optional.of(originalTag));
+        when(gitRepository.isClean()).thenReturn(false);
+        
+        //when
+        SemanticVersion result = service.calculateSemVer(true);
+        
+        //then
+        assertThat(result.toString()).isEqualTo("3.1.12-SNAPSHOT");
+    }
+    
+    @Test
+    public void testShouldReturnVersionWithSnapshotAndBuildMetadata() {
+        //given
+        String originalTag = "3.1.12+ba01";
+        when(gitRepository.getLatestTag("")).thenReturn(Optional.of(originalTag));
+        when(gitRepository.isClean()).thenReturn(false);
+        
+        //when
+        SemanticVersion result = service.calculateSemVer(true);
+        
+        //then
+        assertThat(result.toString()).isEqualTo("3.1.12-SNAPSHOT+ba01");
+    }
+    
+    @Test
+    public void testShouldReturnVersionWithSnapshotAndPreRelease() {
+        //given
+        String originalTag = "3.1.12-abc";
+        when(gitRepository.getLatestTag("")).thenReturn(Optional.of(originalTag));
+        when(gitRepository.isClean()).thenReturn(false);
+        
+        //when
+        SemanticVersion result = service.calculateSemVer(true);
+        
+        //then
+        assertThat(result.toString()).isEqualTo("3.1.12-abc-SNAPSHOT");
+    }
+    
+    @Test
+    public void testShouldReturnOriginalVersionWhenAlreadySnapshot() {
+        //given
+        String originalTag = "3.1.12-SNAPSHOT";
+        when(gitRepository.getLatestTag("")).thenReturn(Optional.of(originalTag));
+        when(gitRepository.isClean()).thenReturn(false);
+        
+        //when
+        SemanticVersion result = service.calculateSemVer(true);
+        
+        //then
+        assertThat(result.toString()).isEqualTo("3.1.12-SNAPSHOT");
+    }
+    
+    @Test
+    public void testShouldReturnOriginalVersionWhenAlreadySnapshotAndOtherPreRelease() {
+        //given
+        String originalTag = "3.1.12-xyz.SNAPSHOT";
+        when(gitRepository.getLatestTag("")).thenReturn(Optional.of(originalTag));
+        when(gitRepository.isClean()).thenReturn(false);
+        
+        //when
+        SemanticVersion result = service.calculateSemVer(true);
+        
+        //then
+        assertThat(result.toString()).isEqualTo("3.1.12-xyz.SNAPSHOT");
+    }
+    
+    @Test
+    public void testShouldReturnVersionWithSnapshotAndPreReleaseAndBuildMetadata() {
+        //given
+        String originalTag = "3.1.12-xyz.a01+abc6";
+        when(gitRepository.getLatestTag("")).thenReturn(Optional.of(originalTag));
+        when(gitRepository.isClean()).thenReturn(false);
+        
+        //when
+        SemanticVersion result = service.calculateSemVer(true);
+        
+        //then
+        assertThat(result.toString()).isEqualTo("3.1.12-xyz.a01-SNAPSHOT+abc6");
+    }
+    
+    @Test
+    public void testShouldReturnVersionWithSnapshotWhenSomeCommitsAhead() {
+        //given
+        String originalTag = "3.1.12";
+        when(gitRepository.getLatestTag("")).thenReturn(Optional.of(originalTag));
+        when(gitRepository.isClean()).thenReturn(true);
+        when(gitRepository.getCommitsSinceTag(originalTag)).thenReturn(6);
+        
+        //when
+        SemanticVersion result = service.calculateSemVer(true);
+        
+        //then
+        assertThat(result.toString()).isEqualTo("3.1.12-SNAPSHOT");
+    }
+    
+    @Test
+    public void testShouldReturnVersionWithSnapshotWhenSomeCommitsAheadAndNotClean() {
+        //given
+        String originalTag = "3.1.12";
+        when(gitRepository.getLatestTag("")).thenReturn(Optional.of(originalTag));
+        when(gitRepository.isClean()).thenReturn(false);
+        when(gitRepository.getCommitsSinceTag(originalTag)).thenReturn(6);
+        
+        //when
+        SemanticVersion result = service.calculateSemVer(true);
+        
+        //then
+        assertThat(result.toString()).isEqualTo("3.1.12-SNAPSHOT");
+    }
+    
+    @Test
+    public void testShouldReturnVersionWithOutSnapshotWhenActual() {
+        //given
+        String originalTag = "3.1.12";
+        when(gitRepository.getLatestTag("")).thenReturn(Optional.of(originalTag));
+        when(gitRepository.isClean()).thenReturn(true);
+        when(gitRepository.getCommitsSinceTag(originalTag)).thenReturn(0);
+        
+        //when
+        SemanticVersion result = service.calculateSemVer(true);
+        
+        //then
+        assertThat(result.toString()).isEqualTo("3.1.12");
     }
 }
