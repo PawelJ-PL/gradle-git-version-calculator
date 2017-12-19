@@ -1,6 +1,6 @@
 package com.github.gradle_git_version_calculator;
 
-import com.github.gradle_git_version_calculator.models.SemanticVersion;
+import com.github.pawelj_pl.semver_j.SemanticVersion;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -145,7 +145,21 @@ public class GitVersionCalculatorTest {
         SemanticVersion result = service.calculateSemVer(true);
         
         //then
-        assertThat(result.toString()).isEqualTo("3.1.12-SNAPSHOT");
+        assertThat(result.toString()).isEqualTo("3.2.0-SNAPSHOT");
+    }
+    
+    @Test
+    public void testShouldReturnVersionWithSnapshotWhenMinorAndMajorZero() {
+        //given
+        String originalTag = "0.0.8";
+        when(gitRepository.getLatestTag("")).thenReturn(Optional.of(originalTag));
+        when(gitRepository.isClean()).thenReturn(false);
+        
+        //when
+        SemanticVersion result = service.calculateSemVer(true);
+        
+        //then
+        assertThat(result.toString()).isEqualTo("0.0.9-SNAPSHOT");
     }
     
     @Test
@@ -159,7 +173,7 @@ public class GitVersionCalculatorTest {
         SemanticVersion result = service.calculateSemVer(true);
         
         //then
-        assertThat(result.toString()).isEqualTo("3.1.12-SNAPSHOT+ba01");
+        assertThat(result.toString()).isEqualTo("3.2.0-SNAPSHOT");
     }
     
     @Test
@@ -173,7 +187,7 @@ public class GitVersionCalculatorTest {
         SemanticVersion result = service.calculateSemVer(true);
         
         //then
-        assertThat(result.toString()).isEqualTo("3.1.12-abc-SNAPSHOT");
+        assertThat(result.toString()).isEqualTo("3.2.0-abc-SNAPSHOT");
     }
     
     @Test
@@ -215,7 +229,7 @@ public class GitVersionCalculatorTest {
         SemanticVersion result = service.calculateSemVer(true);
         
         //then
-        assertThat(result.toString()).isEqualTo("3.1.12-xyz.a01-SNAPSHOT+abc6");
+        assertThat(result.toString()).isEqualTo("3.2.0-xyz.a01-SNAPSHOT");
     }
     
     @Test
@@ -230,7 +244,7 @@ public class GitVersionCalculatorTest {
         SemanticVersion result = service.calculateSemVer(true);
         
         //then
-        assertThat(result.toString()).isEqualTo("3.1.12-SNAPSHOT");
+        assertThat(result.toString()).isEqualTo("3.2.0-SNAPSHOT");
     }
     
     @Test
@@ -245,7 +259,7 @@ public class GitVersionCalculatorTest {
         SemanticVersion result = service.calculateSemVer(true);
         
         //then
-        assertThat(result.toString()).isEqualTo("3.1.12-SNAPSHOT");
+        assertThat(result.toString()).isEqualTo("3.2.0-SNAPSHOT");
     }
     
     @Test

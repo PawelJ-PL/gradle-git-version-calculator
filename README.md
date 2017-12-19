@@ -35,7 +35,7 @@ if prefix is set to *zzz__* (no tag matches) result version will be default `0.0
 
 #### Alternative
 
-When `withShanpshot` option is set (in build script or as method parameter) there will be added only SNAPSHOT suffix to preRelease part of version if repository is not clean or if commit with tag isn't HEAD.
+When `withShanpshot` option is set (in build script or as method parameter), the minor (patch version, if minor and major are less than 1) version will be incremented and there will be added SNAPSHOT suffix to preRelease part of version if repository is not clean or if commit with tag isn't HEAD.
 
 ## Requirements
 Because this plugin uses git commands, the Git must be installed and must be available as git from command line (in further version, path to git executable probably will be configurable).
