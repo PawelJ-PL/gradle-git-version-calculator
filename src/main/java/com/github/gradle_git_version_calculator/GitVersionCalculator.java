@@ -1,7 +1,7 @@
 package com.github.gradle_git_version_calculator;
 
 
-import com.github.gradle_git_version_calculator.models.SemanticVersion;
+import com.github.pawelj_pl.semver_j.SemanticVersion;
 
 public class GitVersionCalculator {
     
@@ -67,10 +67,8 @@ public class GitVersionCalculator {
     }
     
     private SemanticVersion getVersionWithUpdatedBuildMetadata(SemanticVersion originalVersion, String newElement) {
-        SemanticVersion result = originalVersion.copy();
-        String newBuildMetadata = appendVersionPart(result.getBuildMetadata().orElse(""), newElement, ".");
-        result.setBuildMetadata(newBuildMetadata);
-        return result;
+        String newBuildMetadata = appendVersionPart(originalVersion.getBuildMetadata().orElse(""), newElement, ".");
+        return originalVersion.newBuildMetadata(newBuildMetadata);
     }
     
     private SemanticVersion getVersionWithSnapshot(SemanticVersion originalVersion, String baseTag) {
@@ -81,10 +79,12 @@ public class GitVersionCalculator {
         if (currentPreRelease.endsWith("SNAPSHOT")) {
             return originalVersion;
         }
-        SemanticVersion result = originalVersion.copy();
         String newPreRelease = appendVersionPart(currentPreRelease, "SNAPSHOT", "-");
-        result.setPreRelease(newPreRelease);
-        return result;
+        if (originalVersion.getMajor() < 1 && originalVersion.getMinor() < 1) {
+            return originalVersion.incrementPatch().newPreRelease(newPreRelease);
+        } else {
+            return originalVersion.incrementMinor().newPreRelease(newPreRelease);
+        }
     }
     
     private boolean determineSnapshot(String baseTag) {
